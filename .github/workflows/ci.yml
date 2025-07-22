@@ -96,7 +96,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Pack
-      run: dotnet pack --configuration Release --no-build --output nupkgs
+      run: dotnet pack IronJava.Core/IronJava.Core.csproj --configuration Release --no-build --output nupkgs
 
     - name: Upload NuGet package
       uses: actions/upload-artifact@v4
