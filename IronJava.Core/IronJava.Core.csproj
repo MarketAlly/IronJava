@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>IronJava</PackageId>
+    <Version>1.1.0</Version>
+    <Authors>David H Friedel Jr</Authors>
+    <Company>MarketAlly</Company>
+    <Description>A native .NET library that parses Java source files and provides a strongly-typed AST (Abstract Syntax Tree) accessible in C#. Supports Java 17 syntax with comprehensive visitor pattern, AST transformations, and JSON serialization.</Description>
+    <PackageTags>java;parser;ast;antlr;syntax-tree;java17;code-analysis;visitor-pattern</PackageTags>
+    <PackageProjectUrl>https://github.com/MarketAlly/IronJava</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MarketAlly/IronJava</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- <PackageIcon>icon.png</PackageIcon> -->
+    <Copyright>Copyright (c) 2025 MarketAlly</Copyright>
+
+    <!-- Build Properties -->
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.8.0" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Antlr4 Include="Grammar\Java9Lexer.g4">
+      <Package>IronJava.Core.Grammar</Package>
+    </Antlr4>
+    <Antlr4 Include="Grammar\Java9Parser.g4">
+      <Package>IronJava.Core.Grammar</Package>
+      <Listener>false</Listener>
+      <Visitor>true</Visitor>
+    </Antlr4>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- IronJava Icon - Java coffee cup with .NET styling -->
+  <rect width="256" height="256" fill="#512BD4" rx="32"/>
+  
+  <!-- Coffee cup -->
+  <path d="M60 80 Q60 60 80 60 L140 60 Q160 60 160 80 L160 140 Q160 160 140 160 L80 160 Q60 160 60 140 Z" 
+        fill="#FFF" stroke="#FFF" stroke-width="2"/>
+  
+  <!-- Cup handle -->
+  <path d="M160 90 Q190 90 190 120 Q190 150 160 150" 
+        fill="none" stroke="#FFF" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- Java steam -->
+  <path d="M90 40 Q85 20 90 10 M110 40 Q105 20 110 10 M130 40 Q125 20 130 10" 
+        fill="none" stroke="#FFF" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+  
+  <!-- IronJava text -->
+  <text x="128" y="210" font-family="Arial, sans-serif" font-size="28" font-weight="bold" 
+        text-anchor="middle" fill="#FFF">IronJava</text>
+</svg>
