@@ -10,6 +10,7 @@
     <Version>1.1.0</Version>
     <Authors>David H Friedel Jr</Authors>
     <Company>MarketAlly</Company>
+    <Title>MarketAlly IronJava</Title>
     <Description>A native .NET library that parses Java source files and provides a strongly-typed AST (Abstract Syntax Tree) accessible in C#. Supports Java 17 syntax with comprehensive visitor pattern, AST transformations, and JSON serialization.</Description>
     <PackageTags>java;parser;ast;antlr;syntax-tree;java17;code-analysis;visitor-pattern</PackageTags>
     <PackageProjectUrl>https://github.com/MarketAlly/IronJava</PackageProjectUrl>
@@ -19,6 +20,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <Copyright>Copyright (c) 2025 MarketAlly</Copyright>
+    <PackageIcon>icon.png</PackageIcon>
 
     <!-- Build Properties -->
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -39,6 +41,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="icon.png">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>true</Visible>
+    </None>
     <None Include="..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>
