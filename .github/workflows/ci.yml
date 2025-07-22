@@ -124,9 +124,13 @@ jobs:
 
     - name: Publish to NuGet
       run: |
+        if [ -z "$NUGET_API_KEY" ]; then
+          echo "Error: NUGET_API_KEY is not set"
+          exit 1
+        fi
         for package in nupkgs/*.nupkg; do
           echo "Publishing $package"
-          dotnet nuget push "$package" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push "$package" --api-key "$NUGET_API_KEY" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
         done
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
