@@ -105,31 +105,54 @@ public abstract class TypeDeclaration : JavaNode
 {
     public string Name { get; set; }
     public Modifiers Modifiers { get; set; }
-    public List<MemberDeclaration> Members { get; set; }
+    public List<Annotation> Annotations { get; set; }
+    public List<TypeParameter> TypeParameters { get; set; }
+    public JavaDoc? JavaDoc { get; set; }
+    
+    // Gets the body/members of this type declaration
+    public abstract IEnumerable<JavaNode> Body { get; }
 }
 
 public class ClassDeclaration : TypeDeclaration
 {
-    public TypeNode? Superclass { get; set; }
-    public List<TypeNode> Interfaces { get; set; }
-    public List<TypeParameter> TypeParameters { get; set; }
+    public TypeReference? SuperClass { get; set; }
+    public List<TypeReference> Interfaces { get; set; }
+    public List<MemberDeclaration> Members { get; set; }
+    public List<TypeDeclaration> NestedTypes { get; set; }
+    public bool IsRecord { get; set; }
+    
+    // Body includes both Members and NestedTypes
+    public override IEnumerable<JavaNode> Body => Members.Concat(NestedTypes);
 }
 
 public class InterfaceDeclaration : TypeDeclaration
 {
-    public List<TypeNode> ExtendedInterfaces { get; set; }
-    public List<TypeParameter> TypeParameters { get; set; }
+    public List<TypeReference> ExtendedInterfaces { get; set; }
+    public List<MemberDeclaration> Members { get; set; }
+    public List<TypeDeclaration> NestedTypes { get; set; }
+    
+    // Body includes both Members and NestedTypes
+    public override IEnumerable<JavaNode> Body => Members.Concat(NestedTypes);
 }
 
 public class EnumDeclaration : TypeDeclaration
 {
+    public List<TypeReference> Interfaces { get; set; }
     public List<EnumConstant> Constants { get; set; }
-    public List<TypeNode> Interfaces { get; set; }
+    public List<MemberDeclaration> Members { get; set; }
+    public List<TypeDeclaration> NestedTypes { get; set; }
+    
+    // Body includes Constants, Members and NestedTypes
+    public override IEnumerable<JavaNode> Body => Constants.Concat(Members).Concat(NestedTypes);
 }
 
 public class AnnotationDeclaration : TypeDeclaration
 {
     public List<AnnotationMember> Members { get; set; }
+    public List<TypeDeclaration> NestedTypes { get; set; }
+    
+    // Body includes both Members and NestedTypes
+    public override IEnumerable<JavaNode> Body => Members.Concat(NestedTypes);
 }
 
 public class RecordDeclaration : TypeDeclaration
@@ -720,6 +743,18 @@ var mainMethod = AstQuery.FirstOrDefault<MethodDeclaration>(compilationUnit,
 var containingClass = AstQuery.GetAncestors(method, compilationUnit)
     .OfType<ClassDeclaration>()
     .FirstOrDefault();
+
+// Find all nested types in a class
+var outerClass = compilationUnit.Types.OfType<ClassDeclaration>().First();
+var allNestedTypes = outerClass.NestedTypes;
+
+// Find nested interfaces specifically
+var nestedInterfaces = outerClass.NestedTypes
+    .OfType<InterfaceDeclaration>();
+
+// Recursively find all nested types (including deeply nested)
+var allNested = AstQuery.FindAll<TypeDeclaration>(outerClass)
+    .Where(t => t != outerClass);
 ```
 
 ## AST Transformation API

@@ -82,9 +82,17 @@ CompilationUnit
 ├── ImportDeclaration[]
 └── TypeDeclaration[]
     ├── ClassDeclaration
+    │   ├── Members[]
+    │   └── NestedTypes[]
     ├── InterfaceDeclaration
+    │   ├── Members[]
+    │   └── NestedTypes[]
     ├── EnumDeclaration
+    │   ├── Constants[]
+    │   ├── Members[]
+    │   └── NestedTypes[]
     └── AnnotationDeclaration
+        └── Members[]
 ```
 
 ### Visitor Pattern
@@ -152,6 +160,13 @@ var serializableClasses = ast
 var getters = ast
     .FindAll<MethodDeclaration>()
     .Where(m => m.IsGetter());
+
+// Access nested types
+var outerClass = ast.Types.OfType<ClassDeclaration>().First();
+foreach (var nestedType in outerClass.NestedTypes)
+{
+    Console.WriteLine($"Nested: {nestedType.Name} ({nestedType.GetType().Name})");
+}
 ```
 
 ### JSON Serialization
