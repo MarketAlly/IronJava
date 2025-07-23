@@ -246,7 +246,9 @@ namespace MarketAlly.IronJava.Tests
                         null
                     )
                 },
-                null
+                new List<TypeDeclaration>(),
+                null,
+                false
             );
 
             var builder = new TransformationBuilder()
@@ -348,7 +350,9 @@ namespace MarketAlly.IronJava.Tests
                 null,
                 new List<TypeReference>(),
                 new List<MemberDeclaration> { mainMethod, helperMethod, field },
-                null
+                new List<TypeDeclaration>(),
+                null,
+                false
             );
 
             return new CompilationUnit(
@@ -393,7 +397,9 @@ namespace MarketAlly.IronJava.Tests
                 null,
                 new List<TypeReference> { serializableInterface },
                 new List<MemberDeclaration> { serializeMethod },
-                null
+                new List<TypeDeclaration>(),
+                null,
+                false
             );
 
             return new CompilationUnit(

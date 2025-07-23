@@ -149,6 +149,7 @@ namespace MarketAlly.IronJava.Core.AST.Transformation
                 node.SuperClass,
                 node.Interfaces,
                 transformedMembers,
+                node.NestedTypes,
                 node.JavaDoc,
                 node.IsRecord
             );
@@ -201,6 +202,7 @@ namespace MarketAlly.IronJava.Core.AST.Transformation
                 node.SuperClass,
                 node.Interfaces,
                 transformedMembers,
+                node.NestedTypes,
                 node.JavaDoc,
                 node.IsRecord
             );
@@ -336,6 +338,7 @@ namespace MarketAlly.IronJava.Core.AST.Transformation
                 node.SuperClass,
                 node.Interfaces,
                 transformedMembers,
+                node.NestedTypes,
                 node.JavaDoc,
                 node.IsRecord
             );
