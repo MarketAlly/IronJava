@@ -9,6 +9,16 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
     public abstract class TypeReference : JavaNode
     {
         protected TypeReference(SourceRange location) : base(location) { }
+        
+        /// <summary>
+        /// Gets the simple name of the type.
+        /// </summary>
+        public abstract string Name { get; }
+        
+        /// <summary>
+        /// Gets the fully qualified name of the type.
+        /// </summary>
+        public virtual string QualifiedName => Name;
     }
 
     /// <summary>
@@ -17,6 +27,8 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
     public class PrimitiveType : TypeReference
     {
         public PrimitiveTypeKind Kind { get; }
+        
+        public override string Name => Kind.ToString().ToLower();
 
         public PrimitiveType(SourceRange location, PrimitiveTypeKind kind) : base(location)
         {
@@ -45,7 +57,9 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
     /// </summary>
     public class ClassOrInterfaceType : TypeReference
     {
-        public string Name { get; }
+        private readonly string _name;
+        
+        public override string Name => _name;
         public ClassOrInterfaceType? Scope { get; }
         public IReadOnlyList<TypeArgument> TypeArguments { get; }
         public IReadOnlyList<Annotation> Annotations { get; }
@@ -57,7 +71,7 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             IReadOnlyList<TypeArgument> typeArguments,
             IReadOnlyList<Annotation> annotations) : base(location)
         {
-            Name = name;
+            _name = name;
             Scope = scope;
             TypeArguments = typeArguments;
             Annotations = annotations;
@@ -68,6 +82,8 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
         }
 
         public string FullName => Scope != null ? $"{Scope.FullName}.{Name}" : Name;
+        
+        public override string QualifiedName => FullName;
 
         public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitClassOrInterfaceType(this);
         public override void Accept(IJavaVisitor visitor) => visitor.VisitClassOrInterfaceType(this);
@@ -80,6 +96,10 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
     {
         public TypeReference ElementType { get; }
         public int Dimensions { get; }
+        
+        public override string Name => ElementType.Name + new string('[', Dimensions) + new string(']', Dimensions);
+        
+        public override string QualifiedName => ElementType.QualifiedName + new string('[', Dimensions) + new string(']', Dimensions);
 
         public ArrayType(
             SourceRange location,

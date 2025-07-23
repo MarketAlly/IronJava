@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using MarketAlly.IronJava.Core.AST.Visitors;
 
 namespace MarketAlly.IronJava.Core.AST.Nodes
@@ -13,6 +14,11 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
         public IReadOnlyList<Annotation> Annotations { get; }
         public IReadOnlyList<TypeParameter> TypeParameters { get; }
         public JavaDoc? JavaDoc { get; }
+        
+        /// <summary>
+        /// Gets the body/members of this type declaration.
+        /// </summary>
+        public abstract IEnumerable<JavaNode> Body { get; }
 
         protected TypeDeclaration(
             SourceRange location,
@@ -67,6 +73,8 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             AddChildren(members);
         }
 
+        public override IEnumerable<JavaNode> Body => Members;
+
         public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitClassDeclaration(this);
         public override void Accept(IJavaVisitor visitor) => visitor.VisitClassDeclaration(this);
     }
@@ -96,6 +104,8 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             AddChildren(extendedInterfaces);
             AddChildren(members);
         }
+
+        public override IEnumerable<JavaNode> Body => Members;
 
         public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitInterfaceDeclaration(this);
         public override void Accept(IJavaVisitor visitor) => visitor.VisitInterfaceDeclaration(this);
@@ -130,6 +140,8 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             AddChildren(members);
         }
 
+        public override IEnumerable<JavaNode> Body => Constants.Cast<JavaNode>().Concat(Members);
+
         public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitEnumDeclaration(this);
         public override void Accept(IJavaVisitor visitor) => visitor.VisitEnumDeclaration(this);
     }
@@ -153,6 +165,8 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             Members = members;
             AddChildren(members);
         }
+
+        public override IEnumerable<JavaNode> Body => Members;
 
         public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitAnnotationDeclaration(this);
         public override void Accept(IJavaVisitor visitor) => visitor.VisitAnnotationDeclaration(this);

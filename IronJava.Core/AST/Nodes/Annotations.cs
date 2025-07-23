@@ -10,6 +10,11 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
     {
         public TypeReference Type { get; }
         public IReadOnlyList<AnnotationArgument> Arguments { get; }
+        
+        /// <summary>
+        /// Gets the name of the annotation (e.g., "Override" for @Override).
+        /// </summary>
+        public string Name => Type.Name;
 
         public Annotation(
             SourceRange location,

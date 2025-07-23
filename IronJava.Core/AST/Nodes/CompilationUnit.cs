@@ -38,6 +38,11 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
     {
         public string PackageName { get; }
         public IReadOnlyList<Annotation> Annotations { get; }
+        
+        /// <summary>
+        /// Gets the package name. Alias for PackageName for consistency.
+        /// </summary>
+        public string Name => PackageName;
 
         public PackageDeclaration(
             SourceRange location,
@@ -61,6 +66,13 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
         public string ImportPath { get; }
         public bool IsStatic { get; }
         public bool IsWildcard { get; }
+        
+        /// <summary>
+        /// Gets the name of the imported type or package.
+        /// For "import java.util.List", returns "java.util.List"
+        /// For "import java.util.*", returns "java.util.*"
+        /// </summary>
+        public string Name => ImportPath;
 
         public ImportDeclaration(
             SourceRange location,
