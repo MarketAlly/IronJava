@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using IronJava.Core.AST.Visitors;
+using MarketAlly.IronJava.Core.AST.Visitors;
 
-namespace IronJava.Core.AST.Nodes
+namespace MarketAlly.IronJava.Core.AST.Nodes
 {
     /// <summary>
     /// Represents a Java source file (compilation unit).

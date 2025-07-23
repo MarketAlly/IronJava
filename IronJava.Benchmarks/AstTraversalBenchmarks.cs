@@ -1,11 +1,11 @@
 using BenchmarkDotNet.Attributes;
-using IronJava.Core;
-using IronJava.Core.AST;
-using IronJava.Core.AST.Nodes;
-using IronJava.Core.AST.Query;
-using IronJava.Core.AST.Visitors;
+using MarketAlly.IronJava.Core;
+using MarketAlly.IronJava.Core.AST;
+using MarketAlly.IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.AST.Query;
+using MarketAlly.IronJava.Core.AST.Visitors;
 
-namespace IronJava.Benchmarks
+namespace MarketAlly.IronJava.Benchmarks
 {
     [MemoryDiagnoser]
     public class AstTraversalBenchmarks
@@ -108,7 +108,7 @@ namespace IronJava.Benchmarks
 
             public void Reset() => NodeCount = 0;
 
-            protected override void DefaultVisit(IronJava.Core.AST.JavaNode node)
+            protected override void DefaultVisit(MarketAlly.IronJava.Core.AST.JavaNode node)
             {
                 NodeCount++;
                 base.DefaultVisit(node);

@@ -1,9 +1,9 @@
 using Antlr4.Runtime;
-using IronJava.Core.AST.Builders;
-using IronJava.Core.AST.Nodes;
-using IronJava.Core.Grammar;
+using MarketAlly.IronJava.Core.AST.Builders;
+using MarketAlly.IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.Grammar;
 
-namespace IronJava.Core
+namespace MarketAlly.IronJava.Core
 {
     public class JavaParser
     {

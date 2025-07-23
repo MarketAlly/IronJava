@@ -4,10 +4,11 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>MarketAlly.IronJava</RootNamespace>
 
     <!-- NuGet Package Metadata -->
     <PackageId>IronJava</PackageId>
-    <Version>1.1.0</Version>
+    <Version>2.0.0</Version>
     <Authors>David H Friedel Jr</Authors>
     <Company>MarketAlly</Company>
     <Title>IronJava</Title>
@@ -53,10 +54,10 @@
 
   <ItemGroup>
     <Antlr4 Include="Grammar\Java9Lexer.g4">
-      <Package>IronJava.Core.Grammar</Package>
+      <Package>MarketAlly.IronJava.Core.Grammar</Package>
     </Antlr4>
     <Antlr4 Include="Grammar\Java9Parser.g4">
-      <Package>IronJava.Core.Grammar</Package>
+      <Package>MarketAlly.IronJava.Core.Grammar</Package>
       <Listener>false</Listener>
       <Visitor>true</Visitor>
     </Antlr4>

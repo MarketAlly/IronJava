@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
-using IronJava.Core.AST;
-using IronJava.Core.AST.Comparison;
-using IronJava.Core.AST.Nodes;
-using IronJava.Core.AST.Query;
-using IronJava.Core.AST.Transformation;
-using IronJava.Core.Serialization;
+using MarketAlly.IronJava.Core.AST;
+using MarketAlly.IronJava.Core.AST.Comparison;
+using MarketAlly.IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.AST.Query;
+using MarketAlly.IronJava.Core.AST.Transformation;
+using MarketAlly.IronJava.Core.Serialization;
 using Xunit;
 
-namespace IronJava.Tests
+namespace MarketAlly.IronJava.Tests
 {
     public class Phase3Tests
     {

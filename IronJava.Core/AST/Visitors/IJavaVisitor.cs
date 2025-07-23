@@ -1,6 +1,6 @@
-using IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.AST.Nodes;
 
-namespace IronJava.Core.AST.Visitors
+namespace MarketAlly.IronJava.Core.AST.Visitors
 {
     /// <summary>
     /// Visitor interface for traversing Java AST nodes without returning values.

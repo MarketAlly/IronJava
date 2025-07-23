@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using IronJava.Core.AST.Nodes;
-using IronJava.Core.AST.Visitors;
+using MarketAlly.IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.AST.Visitors;
 
-namespace IronJava.Core.AST.Query
+namespace MarketAlly.IronJava.Core.AST.Query
 {
     /// <summary>
     /// Provides LINQ-style querying capabilities for AST nodes.

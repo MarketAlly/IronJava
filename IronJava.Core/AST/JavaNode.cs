@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using IronJava.Core.AST.Visitors;
+using MarketAlly.IronJava.Core.AST.Visitors;
 
-namespace IronJava.Core.AST
+namespace MarketAlly.IronJava.Core.AST
 {
     /// <summary>
     /// Base class for all Java AST nodes.

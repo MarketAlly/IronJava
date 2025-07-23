@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using IronJava.Core.AST;
-using IronJava.Core.AST.Nodes;
-using IronJava.Core.AST.Visitors;
+using MarketAlly.IronJava.Core.AST;
+using MarketAlly.IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.AST.Visitors;
 
-namespace IronJava.Core.Serialization
+namespace MarketAlly.IronJava.Core.Serialization
 {
     /// <summary>
     /// Provides JSON serialization for Java AST nodes.

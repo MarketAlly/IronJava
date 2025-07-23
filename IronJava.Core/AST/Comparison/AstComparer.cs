@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using IronJava.Core.AST.Nodes;
-using IronJava.Core.AST.Visitors;
+using MarketAlly.IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.AST.Visitors;
 
-namespace IronJava.Core.AST.Comparison
+namespace MarketAlly.IronJava.Core.AST.Comparison
 {
     /// <summary>
     /// Provides equality comparison for AST nodes.

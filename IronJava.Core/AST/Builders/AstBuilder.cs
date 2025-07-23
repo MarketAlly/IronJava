@@ -4,10 +4,10 @@ using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using IronJava.Core.AST.Nodes;
-using IronJava.Core.Grammar;
+using MarketAlly.IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.Grammar;
 
-namespace IronJava.Core.AST.Builders
+namespace MarketAlly.IronJava.Core.AST.Builders
 {
     /// <summary>
     /// Builds a typed AST from ANTLR parse tree.

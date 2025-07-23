@@ -1,4 +1,4 @@
-namespace IronJava.Core.AST
+namespace MarketAlly.IronJava.Core.AST
 {
     /// <summary>
     /// Represents a location in the source code.

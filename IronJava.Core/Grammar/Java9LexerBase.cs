@@ -35,7 +35,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace IronJava.Core.Grammar
+namespace MarketAlly.IronJava.Core.Grammar
 {
     public abstract class Java9LexerBase : Lexer
 {

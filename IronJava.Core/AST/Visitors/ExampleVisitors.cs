@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Text;
-using IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.AST.Nodes;
 
-namespace IronJava.Core.AST.Visitors
+namespace MarketAlly.IronJava.Core.AST.Visitors
 {
     /// <summary>
     /// Example visitor that collects all class names in the AST.

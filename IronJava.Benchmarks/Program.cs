@@ -1,6 +1,6 @@
 using BenchmarkDotNet.Running;
 
-namespace IronJava.Benchmarks
+namespace MarketAlly.IronJava.Benchmarks
 {
     class Program
     {

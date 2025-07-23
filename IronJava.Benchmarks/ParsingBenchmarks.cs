@@ -1,7 +1,7 @@
 using BenchmarkDotNet.Attributes;
-using IronJava.Core;
+using MarketAlly.IronJava.Core;
 
-namespace IronJava.Benchmarks
+namespace MarketAlly.IronJava.Benchmarks
 {
     [MemoryDiagnoser]
     [SimpleJob(warmupCount: 3, iterationCount: 5)]

@@ -1,9 +1,9 @@
-using IronJava.Core;
-using IronJava.Core.AST;
-using IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core;
+using MarketAlly.IronJava.Core.AST;
+using MarketAlly.IronJava.Core.AST.Nodes;
 using Xunit;
 
-namespace IronJava.Tests
+namespace MarketAlly.IronJava.Tests
 {
     public class BasicParsingTests
     {

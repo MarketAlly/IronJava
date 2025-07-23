@@ -1,6 +1,6 @@
 using System;
 
-namespace IronJava.Core.AST
+namespace MarketAlly.IronJava.Core.AST
 {
     /// <summary>
     /// Java access modifiers and other modifiers as flags.

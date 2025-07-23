@@ -1,10 +1,10 @@
-using IronJava.Core;
-using IronJava.Core.AST;
-using IronJava.Core.AST.Nodes;
-using IronJava.Core.AST.Visitors;
+using MarketAlly.IronJava.Core;
+using MarketAlly.IronJava.Core.AST;
+using MarketAlly.IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.AST.Visitors;
 using Xunit;
 
-namespace IronJava.Tests
+namespace MarketAlly.IronJava.Tests
 {
     /// <summary>
     /// Demonstrates Phase 2 functionality with our typed AST.
