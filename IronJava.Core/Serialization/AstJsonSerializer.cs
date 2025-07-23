@@ -416,6 +416,22 @@ namespace MarketAlly.IronJava.Core.Serialization
             return result;
         }
 
+        public override Dictionary<string, object?> VisitAnnotationValueArgument(AnnotationValueArgument node)
+        {
+            var result = CreateBaseNode(node);
+            result["name"] = node.Name;
+            result["value"] = node.Value.Accept(this);
+            return result;
+        }
+
+        public override Dictionary<string, object?> VisitAnnotationArrayArgument(AnnotationArrayArgument node)
+        {
+            var result = CreateBaseNode(node);
+            result["name"] = node.Name;
+            result["values"] = node.Values.Select(v => v.Accept(this)).ToList();
+            return result;
+        }
+
         public override Dictionary<string, object?> VisitJavaDoc(JavaDoc node)
         {
             var result = CreateBaseNode(node);
@@ -558,6 +574,13 @@ namespace MarketAlly.IronJava.Core.Serialization
         {
             var result = CreateBaseNode(node);
             result["elements"] = node.Elements.Select(e => e.Accept(this)).ToList();
+            return result;
+        }
+
+        public override Dictionary<string, object?> VisitAnnotationExpression(AnnotationExpression node)
+        {
+            var result = CreateBaseNode(node);
+            result["annotation"] = node.Annotation.Accept(this);
             return result;
         }
 
@@ -747,6 +770,9 @@ namespace MarketAlly.IronJava.Core.Serialization
                 "InstanceOfExpression" => DeserializeInstanceOfExpression(element, location),
                 "NewArrayExpression" => DeserializeNewArrayExpression(element, location),
                 "ArrayInitializer" => DeserializeArrayInitializer(element, location),
+                "AnnotationExpression" => DeserializeAnnotationExpression(element, location),
+                "AnnotationValueArgument" => DeserializeAnnotationValueArgument(element, location),
+                "AnnotationArrayArgument" => DeserializeAnnotationArrayArgument(element, location),
                 "MethodReferenceExpression" => DeserializeMethodReferenceExpression(element, location),
                 "ClassLiteralExpression" => DeserializeClassLiteralExpression(element, location),
                 "LocalVariableStatement" => DeserializeLocalVariableStatement(element, location),
@@ -1280,6 +1306,30 @@ namespace MarketAlly.IronJava.Core.Serialization
         {
             var elements = DeserializeList<Expression>(element.GetProperty("elements"));
             return new ArrayInitializer(location, elements);
+        }
+
+        private AnnotationExpression DeserializeAnnotationExpression(JsonElement element, SourceRange location)
+        {
+            var annotation = Deserialize(element.GetProperty("annotation")) as Annotation ?? throw new JsonException("annotation is not Annotation");
+            return new AnnotationExpression(location, annotation);
+        }
+
+        private AnnotationValueArgument DeserializeAnnotationValueArgument(JsonElement element, SourceRange location)
+        {
+            var name = element.TryGetProperty("name", out var nameEl) && nameEl.ValueKind != JsonValueKind.Null
+                ? nameEl.GetString()
+                : null;
+            var value = Deserialize(element.GetProperty("value")) as Expression ?? throw new JsonException("value is not Expression");
+            return new AnnotationValueArgument(location, name, value);
+        }
+
+        private AnnotationArrayArgument DeserializeAnnotationArrayArgument(JsonElement element, SourceRange location)
+        {
+            var name = element.TryGetProperty("name", out var nameEl) && nameEl.ValueKind != JsonValueKind.Null
+                ? nameEl.GetString()
+                : null;
+            var values = DeserializeList<Expression>(element.GetProperty("values"));
+            return new AnnotationArrayArgument(location, name, values);
         }
 
         private MethodReferenceExpression DeserializeMethodReferenceExpression(JsonElement element, SourceRange location)

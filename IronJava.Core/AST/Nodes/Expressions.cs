@@ -401,6 +401,23 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
     }
 
     /// <summary>
+    /// Represents an annotation used as an expression (in annotation element values).
+    /// </summary>
+    public class AnnotationExpression : Expression
+    {
+        public Annotation Annotation { get; }
+
+        public AnnotationExpression(SourceRange location, Annotation annotation) : base(location)
+        {
+            Annotation = annotation;
+            AddChild(annotation);
+        }
+
+        public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitAnnotationExpression(this);
+        public override void Accept(IJavaVisitor visitor) => visitor.VisitAnnotationExpression(this);
+    }
+
+    /// <summary>
     /// Represents a lambda expression.
     /// </summary>
     public class LambdaExpression : Expression

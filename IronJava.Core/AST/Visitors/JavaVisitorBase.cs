@@ -54,6 +54,7 @@ namespace MarketAlly.IronJava.Core.AST.Visitors
         public virtual void VisitNewExpression(NewExpression node) => DefaultVisit(node);
         public virtual void VisitNewArrayExpression(NewArrayExpression node) => DefaultVisit(node);
         public virtual void VisitArrayInitializer(ArrayInitializer node) => DefaultVisit(node);
+        public virtual void VisitAnnotationExpression(AnnotationExpression node) => DefaultVisit(node);
         public virtual void VisitLambdaExpression(LambdaExpression node) => DefaultVisit(node);
         public virtual void VisitLambdaParameter(LambdaParameter node) => DefaultVisit(node);
         public virtual void VisitMethodReferenceExpression(MethodReferenceExpression node) => DefaultVisit(node);
@@ -133,6 +134,7 @@ namespace MarketAlly.IronJava.Core.AST.Visitors
         public virtual T VisitNewExpression(NewExpression node) => DefaultVisit(node);
         public virtual T VisitNewArrayExpression(NewArrayExpression node) => DefaultVisit(node);
         public virtual T VisitArrayInitializer(ArrayInitializer node) => DefaultVisit(node);
+        public virtual T VisitAnnotationExpression(AnnotationExpression node) => DefaultVisit(node);
         public virtual T VisitLambdaExpression(LambdaExpression node) => DefaultVisit(node);
         public virtual T VisitLambdaParameter(LambdaParameter node) => DefaultVisit(node);
         public virtual T VisitMethodReferenceExpression(MethodReferenceExpression node) => DefaultVisit(node);

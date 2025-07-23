@@ -297,10 +297,23 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             var annotations = new List<Annotation>();
             foreach (var context in contexts)
             {
+                // Check if this is directly an annotation context
                 if (context is Java9Parser.AnnotationContext annotationContext)
                 {
                     var annotation = BuildAnnotation(annotationContext);
                     if (annotation != null) annotations.Add(annotation);
+                }
+                // Check if this is a modifier that contains an annotation
+                else if (context is ParserRuleContext ruleContext && ruleContext.ChildCount > 0)
+                {
+                    // The first child of a modifier rule that represents an annotation
+                    // will be an AnnotationContext
+                    var firstChild = ruleContext.GetChild(0);
+                    if (firstChild is Java9Parser.AnnotationContext childAnnotation)
+                    {
+                        var annotation = BuildAnnotation(childAnnotation);
+                        if (annotation != null) annotations.Add(annotation);
+                    }
                 }
             }
             return annotations;
@@ -312,25 +325,37 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             TypeReference? type = null;
             var arguments = new List<AnnotationArgument>();
 
+
             // Annotations can be NormalAnnotation, MarkerAnnotation, or SingleElementAnnotation
             if (context.normalAnnotation() != null)
             {
                 var normalAnn = context.normalAnnotation();
                 type = BuildTypeReference(normalAnn.typeName());
-                if (type == null) return null;
+                // Don't return early - try to build the type from the name
+                if (type == null)
+                {
+                    var typeName = normalAnn.typeName().GetText();
+                    type = new ClassOrInterfaceType(GetSourceRange(normalAnn.typeName()), typeName, null, new List<TypeArgument>(), new List<Annotation>());
+                }
 
                 if (normalAnn.elementValuePairList() != null)
                 {
                     foreach (var pair in normalAnn.elementValuePairList().elementValuePair())
                     {
                         var name = pair.identifier().GetText();
-                        var value = BuildExpression(pair.elementValue());
-                        if (value != null)
+                        var value = BuildElementValue(pair.elementValue());
+                        
+                        // Debug - always add the argument even if value is null
+                        // If value is null, create a string literal as fallback
+                        if (value == null)
                         {
-                            arguments.Add(new AnnotationValueArgument(
-                                GetSourceRange(pair), name, value
-                            ));
+                            var elementText = pair.elementValue().GetText();
+                            value = new LiteralExpression(GetSourceRange(pair.elementValue()), elementText, LiteralKind.String);
                         }
+                        
+                        arguments.Add(new AnnotationValueArgument(
+                            GetSourceRange(pair), name, value
+                        ));
                     }
                 }
             }
@@ -338,28 +363,87 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             {
                 var markerAnn = context.markerAnnotation();
                 type = BuildTypeReference(markerAnn.typeName());
-                if (type == null) return null;
+                if (type == null)
+                {
+                    var typeName = markerAnn.typeName().GetText();
+                    type = new ClassOrInterfaceType(GetSourceRange(markerAnn.typeName()), typeName, null, new List<TypeArgument>(), new List<Annotation>());
+                }
                 // Marker annotations have no arguments
             }
             else if (context.singleElementAnnotation() != null)
             {
                 var singleAnn = context.singleElementAnnotation();
                 type = BuildTypeReference(singleAnn.typeName());
-                if (type == null) return null;
+                if (type == null)
+                {
+                    var typeName = singleAnn.typeName().GetText();
+                    type = new ClassOrInterfaceType(GetSourceRange(singleAnn.typeName()), typeName, null, new List<TypeArgument>(), new List<Annotation>());
+                }
 
                 if (singleAnn.elementValue() != null)
                 {
-                    var value = BuildExpression(singleAnn.elementValue());
-                    if (value != null)
+                    var value = BuildElementValue(singleAnn.elementValue());
+                    
+                    // Fallback if BuildElementValue returns null
+                    if (value == null)
                     {
-                        arguments.Add(new AnnotationValueArgument(
-                            location, "value", value
-                        ));
+                        var elementText = singleAnn.elementValue().GetText();
+                        value = new LiteralExpression(GetSourceRange(singleAnn.elementValue()), elementText, LiteralKind.String);
                     }
+                    
+                    arguments.Add(new AnnotationValueArgument(
+                        location, "value", value
+                    ));
                 }
             }
 
             return type != null ? new Annotation(location, type, arguments) : null;
+        }
+
+        private Expression? BuildElementValue(Java9Parser.ElementValueContext context)
+        {
+            if (context.conditionalExpression() != null)
+            {
+                var expr = BuildExpression(context.conditionalExpression());
+                // If BuildExpression returns null, try to parse it as a string literal
+                if (expr == null)
+                {
+                    var text = context.conditionalExpression().GetText();
+                    if (text.StartsWith('"') && text.EndsWith('"'))
+                    {
+                        // Remove quotes and create a string literal
+                        var value = text.Substring(1, text.Length - 2);
+                        expr = new LiteralExpression(GetSourceRange(context), value, LiteralKind.String);
+                    }
+                }
+                return expr;
+            }
+            else if (context.annotation() != null)
+            {
+                var annotation = BuildAnnotation(context.annotation());
+                if (annotation != null)
+                {
+                    return new AnnotationExpression(GetSourceRange(context), annotation);
+                }
+            }
+            else if (context.elementValueArrayInitializer() != null)
+            {
+                var arrayInit = context.elementValueArrayInitializer();
+                var elements = new List<Expression>();
+                
+                if (arrayInit.elementValueList() != null)
+                {
+                    foreach (var elementValue in arrayInit.elementValueList().elementValue())
+                    {
+                        var element = BuildElementValue(elementValue);
+                        if (element != null) elements.Add(element);
+                    }
+                }
+                
+                return new ArrayInitializer(GetSourceRange(arrayInit), elements);
+            }
+            
+            return null;
         }
 
         private List<TypeParameter> BuildTypeParameters(Java9Parser.TypeParametersContext? context)
@@ -414,8 +498,8 @@ namespace MarketAlly.IronJava.Core.AST.Builders
                 Java9Parser.ArrayTypeContext array => BuildArrayType(array),
                 Java9Parser.TypeVariableContext typeVar => BuildTypeVariable(typeVar),
                 Java9Parser.ClassTypeContext classType => BuildClassType(classType),
-                Java9Parser.InterfaceTypeContext interfaceType => BuildInterfaceType(interfaceType),
                 Java9Parser.TypeNameContext typeName => BuildTypeName(typeName),
+                Java9Parser.InterfaceTypeContext interfaceType => BuildInterfaceType(interfaceType),
                 _ => null
             };
         }
@@ -980,6 +1064,13 @@ namespace MarketAlly.IronJava.Core.AST.Builders
 
         private Parameter? BuildLastParameter(Java9Parser.LastFormalParameterContext context)
         {
+            // Check if this is just a regular parameter (not varargs)
+            if (context.formalParameter() != null)
+            {
+                return BuildParameter(context.formalParameter());
+            }
+
+            // Otherwise, it's a varargs parameter
             var location = GetSourceRange(context);
             var modifiers = BuildModifiers(context.variableModifier());
             var annotations = BuildAnnotations(context.variableModifier());
@@ -989,7 +1080,7 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             var declaratorId = context.variableDeclaratorId();
             var name = declaratorId.identifier().GetText();
             var isFinal = modifiers.HasFlag(Modifiers.Final);
-            var isVarArgs = context.GetChild(context.ChildCount - 2)?.GetText() == "...";
+            var isVarArgs = true; // This branch is only for varargs
 
             return new Parameter(location, type, name, isVarArgs, isFinal, annotations);
         }
@@ -1325,7 +1416,7 @@ namespace MarketAlly.IronJava.Core.AST.Builders
 
             if (context.defaultValue() != null)
             {
-                defaultValue = BuildExpression(context.defaultValue().elementValue());
+                defaultValue = BuildElementValue(context.defaultValue().elementValue());
             }
 
             return new AnnotationMember(location, name, type, defaultValue);
@@ -2590,46 +2681,6 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             return parameters;
         }
 
-        private Expression? BuildElementValue(Java9Parser.ElementValueContext context)
-        {
-            if (context.conditionalExpression() != null)
-            {
-                return BuildConditionalExpression(context.conditionalExpression());
-            }
-            else if (context.elementValueArrayInitializer() != null)
-            {
-                return BuildElementValueArrayInitializer(context.elementValueArrayInitializer());
-            }
-            else if (context.annotation() != null)
-            {
-                // Annotation as expression - wrap it
-                var annotation = BuildAnnotation(context.annotation());
-                if (annotation != null)
-                {
-                    // Create a special expression to hold the annotation
-                    return new IdentifierExpression(annotation.Location, "@" + annotation.Type.ToString());
-                }
-            }
-
-            return null;
-        }
-
-        private ArrayInitializer? BuildElementValueArrayInitializer(Java9Parser.ElementValueArrayInitializerContext context)
-        {
-            var location = GetSourceRange(context);
-            var elements = new List<Expression>();
-
-            if (context.elementValueList() != null)
-            {
-                foreach (var value in context.elementValueList().elementValue())
-                {
-                    var expr = BuildElementValue(value);
-                    if (expr != null) elements.Add(expr);
-                }
-            }
-
-            return new ArrayInitializer(location, elements);
-        }
 
         // Statement building methods
 

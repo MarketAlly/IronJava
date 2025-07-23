@@ -6,7 +6,7 @@ using MarketAlly.IronJava.Core.AST.Transformation;
 using MarketAlly.IronJava.Core.AST.Visitors;
 using MarketAlly.IronJava.Core.Serialization;
 
-namespace MarketAlly.IronJava.Sample
+namespace IronJava.Sample
 {
     class Program
     {
@@ -18,6 +18,11 @@ namespace MarketAlly.IronJava.Sample
             // Test nested types
             TestNestedTypes();
             Console.WriteLine("\n===========================\n");
+            
+            // Test annotations
+            TestAnnotations();
+            Console.WriteLine("\n===========================\n");
+            
             
             // Sample Java code
             string javaCode = @"
@@ -294,6 +299,98 @@ public class OuterClass {
             else
             {
                 Console.WriteLine("✗ Parse failed!");
+            }
+        }
+        
+        static void TestAnnotations()
+        {
+            Console.WriteLine("Testing Annotation Parsing");
+            Console.WriteLine("--------------------------");
+            
+            var javaCode = @"
+@Entity
+@Table(name = ""users"")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false, length = 100)
+    private String name;
+    
+    @GetMapping(""/users/{id}"")
+    @ResponseBody
+    public User getUser(@PathVariable Long id) {
+        return null;
+    }
+}
+";
+
+            var result = JavaParser.Parse(javaCode);
+            
+            if (result.Success)
+            {
+                Console.WriteLine("✓ Parse successful!");
+                
+                var userClass = result.Ast!.Types[0] as ClassDeclaration;
+                if (userClass != null)
+                {
+                    Console.WriteLine($"\nClass: {userClass.Name}");
+                    Console.WriteLine($"  Class annotations: {userClass.Annotations.Count}");
+                    foreach (var annotation in userClass.Annotations)
+                    {
+                        var typeName = annotation.Type is ClassOrInterfaceType cit ? cit.Name : annotation.Type.ToString();
+                        Console.WriteLine($"    - @{typeName} with {annotation.Arguments.Count} arguments");
+                    }
+                    
+                    // Check fields
+                    var fields = userClass.Members.OfType<FieldDeclaration>().ToList();
+                    Console.WriteLine($"\n  Fields: {fields.Count}");
+                    foreach (var field in fields)
+                    {
+                        Console.WriteLine($"    - {field.Variables[0].Name}: {field.Annotations.Count} annotations");
+                        foreach (var annotation in field.Annotations)
+                        {
+                            var typeName = annotation.Type is ClassOrInterfaceType cit ? cit.Name : annotation.Type.ToString();
+                            Console.WriteLine($"      - @{typeName}");
+                        }
+                    }
+                    
+                    // Check methods
+                    var methods = userClass.Members.OfType<MethodDeclaration>().ToList();
+                    Console.WriteLine($"\n  Methods: {methods.Count}");
+                    foreach (var method in methods)
+                    {
+                        Console.WriteLine($"    - {method.Name}: {method.Annotations.Count} annotations");
+                        foreach (var annotation in method.Annotations)
+                        {
+                            var typeName = annotation.Type is ClassOrInterfaceType cit ? cit.Name : annotation.Type.ToString();
+                            Console.WriteLine($"      - @{typeName}");
+                        }
+                        
+                        // Check parameters
+                        foreach (var param in method.Parameters)
+                        {
+                            if (param.Annotations.Count > 0)
+                            {
+                                Console.WriteLine($"      Parameter {param.Name}: {param.Annotations.Count} annotations");
+                                foreach (var annotation in param.Annotations)
+                                {
+                                    var typeName = annotation.Type is ClassOrInterfaceType cit ? cit.Name : annotation.Type.ToString();
+                                    Console.WriteLine($"        - @{typeName}");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("✗ Parse failed!");
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"  Error: {error.Message} at {error.Line}:{error.Column}");
+                }
             }
         }
     }
