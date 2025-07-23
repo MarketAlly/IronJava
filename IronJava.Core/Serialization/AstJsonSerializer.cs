@@ -829,9 +829,10 @@ namespace MarketAlly.IronJava.Core.Serialization
 
             var interfaces = DeserializeList<ClassOrInterfaceType>(element.GetProperty("interfaces"));
             var members = DeserializeList<MemberDeclaration>(element.GetProperty("members"));
+            var nestedTypes = DeserializeList<TypeDeclaration>(element.GetProperty("nestedTypes"));
             var isRecord = element.GetProperty("isRecord").GetBoolean();
 
-            return new ClassDeclaration(location, name, modifiers, annotations, typeParameters, superClass, interfaces, members, javaDoc, isRecord);
+            return new ClassDeclaration(location, name, modifiers, annotations, typeParameters, superClass, interfaces, members, nestedTypes, javaDoc, isRecord);
         }
 
         private InterfaceDeclaration DeserializeInterfaceDeclaration(JsonElement element, SourceRange location)
@@ -846,8 +847,9 @@ namespace MarketAlly.IronJava.Core.Serialization
 
             var extendedInterfaces = DeserializeList<ClassOrInterfaceType>(element.GetProperty("extendedInterfaces"));
             var members = DeserializeList<MemberDeclaration>(element.GetProperty("members"));
+            var nestedTypes = DeserializeList<TypeDeclaration>(element.GetProperty("nestedTypes"));
 
-            return new InterfaceDeclaration(location, name, modifiers, annotations, typeParameters, extendedInterfaces, members, javaDoc);
+            return new InterfaceDeclaration(location, name, modifiers, annotations, typeParameters, extendedInterfaces, members, nestedTypes, javaDoc);
         }
 
         private EnumDeclaration DeserializeEnumDeclaration(JsonElement element, SourceRange location)
@@ -862,8 +864,9 @@ namespace MarketAlly.IronJava.Core.Serialization
             var interfaces = DeserializeList<ClassOrInterfaceType>(element.GetProperty("interfaces"));
             var constants = DeserializeList<EnumConstant>(element.GetProperty("constants"));
             var members = DeserializeList<MemberDeclaration>(element.GetProperty("members"));
+            var nestedTypes = DeserializeList<TypeDeclaration>(element.GetProperty("nestedTypes"));
 
-            return new EnumDeclaration(location, name, modifiers, annotations, interfaces, constants, members, javaDoc);
+            return new EnumDeclaration(location, name, modifiers, annotations, interfaces, constants, members, nestedTypes, javaDoc);
         }
 
         private AnnotationDeclaration DeserializeAnnotationDeclaration(JsonElement element, SourceRange location)
@@ -876,8 +879,9 @@ namespace MarketAlly.IronJava.Core.Serialization
                 : null;
 
             var members = DeserializeList<AnnotationMember>(element.GetProperty("members"));
+            var nestedTypes = DeserializeList<TypeDeclaration>(element.GetProperty("nestedTypes"));
 
-            return new AnnotationDeclaration(location, name, modifiers, annotations, members, javaDoc);
+            return new AnnotationDeclaration(location, name, modifiers, annotations, members, nestedTypes, javaDoc);
         }
 
         private FieldDeclaration DeserializeFieldDeclaration(JsonElement element, SourceRange location)

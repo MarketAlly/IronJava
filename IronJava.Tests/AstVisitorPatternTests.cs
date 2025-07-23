@@ -55,7 +55,9 @@ namespace MarketAlly.IronJava.Tests
                 null,
                 new List<TypeReference>(),
                 new List<MemberDeclaration> { mainMethod },
-                null
+                new List<TypeDeclaration>(),
+                null,
+                false
             );
 
             var compilationUnit = new CompilationUnit(
@@ -137,7 +139,9 @@ namespace MarketAlly.IronJava.Tests
                 null,
                 new List<TypeReference>(),
                 new List<MemberDeclaration>(),
-                null
+                new List<TypeDeclaration>(),
+                null,
+                false
             );
 
             var outerClass = new ClassDeclaration(
@@ -149,7 +153,9 @@ namespace MarketAlly.IronJava.Tests
                 null,
                 new List<TypeReference>(),
                 new List<MemberDeclaration>(),
-                null
+                new List<TypeDeclaration>(),
+                null,
+                false
             );
 
             // Navigate the AST
@@ -194,7 +200,9 @@ namespace MarketAlly.IronJava.Tests
                 null,
                 new List<TypeReference>(),
                 new List<MemberDeclaration> { field },
-                null
+                new List<TypeDeclaration>(),
+                null,
+                false
             );
 
             var compilationUnit = new CompilationUnit(

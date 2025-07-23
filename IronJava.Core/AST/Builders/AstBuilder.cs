@@ -201,7 +201,7 @@ namespace MarketAlly.IronJava.Core.AST.Builders
 
             return new ClassDeclaration(
                 location, name, modifiers, annotations, typeParameters,
-                superClass, interfaces, members, javaDoc
+                superClass, interfaces, members, new List<TypeDeclaration>(), javaDoc, false
             );
         }
 
@@ -218,7 +218,7 @@ namespace MarketAlly.IronJava.Core.AST.Builders
 
             return new InterfaceDeclaration(
                 location, name, modifiers, annotations, typeParameters,
-                extendedInterfaces, members, javaDoc
+                extendedInterfaces, members, new List<TypeDeclaration>(), javaDoc
             );
         }
 
@@ -236,7 +236,7 @@ namespace MarketAlly.IronJava.Core.AST.Builders
 
             return new EnumDeclaration(
                 location, name, modifiers, annotations,
-                interfaces, constants, members, javaDoc
+                interfaces, constants, members, new List<TypeDeclaration>(), javaDoc
             );
         }
 
@@ -250,7 +250,7 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             var javaDoc = ExtractJavaDoc(context);
 
             return new AnnotationDeclaration(
-                location, name, modifiers, annotations, members, javaDoc
+                location, name, modifiers, annotations, members, new List<TypeDeclaration>(), javaDoc
             );
         }
 
@@ -1125,7 +1125,9 @@ namespace MarketAlly.IronJava.Core.AST.Builders
                     null,
                     new List<TypeReference>(),
                     members,
-                    null
+                    new List<TypeDeclaration>(),
+                    null,
+                    false
                 );
             }
 
@@ -2108,7 +2110,9 @@ namespace MarketAlly.IronJava.Core.AST.Builders
                     type,
                     new List<TypeReference>(),
                     members,
-                    null
+                    new List<TypeDeclaration>(),
+                    null,
+                    false
                 );
             }
 
@@ -2829,7 +2833,9 @@ namespace MarketAlly.IronJava.Core.AST.Builders
                     type,
                     new List<TypeReference>(),
                     members,
-                    null
+                    new List<TypeDeclaration>(),
+                    null,
+                    false
                 );
             }
 
