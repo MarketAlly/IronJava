@@ -15,6 +15,10 @@ namespace MarketAlly.IronJava.Sample
             Console.WriteLine("IronJava Sample Application");
             Console.WriteLine("===========================\n");
 
+            // Test nested types
+            TestNestedTypes();
+            Console.WriteLine("\n===========================\n");
+            
             // Sample Java code
             string javaCode = @"
 package com.example;
@@ -218,6 +222,79 @@ class User {
 
             Console.WriteLine($"\nMethods that throw exceptions: {throwingMethods.Count}");
             Console.WriteLine();
+        }
+
+        static void TestNestedTypes()
+        {
+            Console.WriteLine("Testing Nested Types Feature");
+            Console.WriteLine("----------------------------");
+            
+            var javaCode = @"
+public class OuterClass {
+    private int outerField;
+    
+    public class InnerClass {
+        private String innerField;
+        
+        public void innerMethod() {
+            System.out.println(innerField);
+        }
+    }
+    
+    public static class StaticNestedClass {
+        private static int staticField;
+    }
+    
+    public interface NestedInterface {
+        void doSomething();
+    }
+    
+    public enum NestedEnum {
+        VALUE1, VALUE2
+    }
+}
+";
+
+            var result = JavaParser.Parse(javaCode);
+            
+            if (result.Success)
+            {
+                Console.WriteLine("✓ Parse successful!");
+                var outerClass = result.Ast!.Types[0] as ClassDeclaration;
+                if (outerClass != null)
+                {
+                    Console.WriteLine($"\nOuter class: {outerClass.Name}");
+                    Console.WriteLine($"  Members: {outerClass.Members.Count}");
+                    Console.WriteLine($"  Nested types: {outerClass.NestedTypes.Count}");
+                    
+                    foreach (var member in outerClass.Members)
+                    {
+                        if (member is FieldDeclaration field)
+                        {
+                            Console.WriteLine($"    - Field: {field.Variables[0].Name}");
+                        }
+                    }
+                    
+                    foreach (var nestedType in outerClass.NestedTypes)
+                    {
+                        Console.WriteLine($"    - Nested: {nestedType.Name} ({nestedType.GetType().Name})");
+                        
+                        if (nestedType is ClassDeclaration nestedClass)
+                        {
+                            Console.WriteLine($"      Static: {nestedClass.Modifiers.HasFlag(Modifiers.Static)}");
+                            Console.WriteLine($"      Members: {nestedClass.Members.Count}");
+                        }
+                        else if (nestedType is EnumDeclaration nestedEnum)
+                        {
+                            Console.WriteLine($"      Constants: {nestedEnum.Constants.Count}");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("✗ Parse failed!");
+            }
         }
     }
 

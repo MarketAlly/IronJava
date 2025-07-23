@@ -8,7 +8,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>IronJava</PackageId>
-    <Version>2.1.0</Version>
+    <Version>2.1.1</Version>
     <Authors>David H Friedel Jr</Authors>
     <Company>MarketAlly</Company>
     <Title>IronJava</Title>

@@ -196,12 +196,12 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             var typeParameters = BuildTypeParameters(context.typeParameters());
             var superClass = context.superclass() != null ? BuildTypeReference(context.superclass().classType()) : null;
             var interfaces = BuildInterfaces(context.superinterfaces());
-            var members = BuildClassMembers(context.classBody());
+            var bodyResult = BuildClassBody(context.classBody());
             var javaDoc = ExtractJavaDoc(context);
 
             return new ClassDeclaration(
                 location, name, modifiers, annotations, typeParameters,
-                superClass, interfaces, members, new List<TypeDeclaration>(), javaDoc, false
+                superClass, interfaces, bodyResult.Members, bodyResult.NestedTypes, javaDoc, false
             );
         }
 
@@ -213,12 +213,12 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             var name = context.identifier().GetText();
             var typeParameters = BuildTypeParameters(context.typeParameters());
             var extendedInterfaces = BuildExtendedInterfaces(context.extendsInterfaces());
-            var members = BuildInterfaceMembers(context.interfaceBody());
+            var bodyResult = BuildInterfaceBody(context.interfaceBody());
             var javaDoc = ExtractJavaDoc(context);
 
             return new InterfaceDeclaration(
                 location, name, modifiers, annotations, typeParameters,
-                extendedInterfaces, members, new List<TypeDeclaration>(), javaDoc
+                extendedInterfaces, bodyResult.Members, bodyResult.NestedTypes, javaDoc
             );
         }
 
@@ -231,12 +231,15 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             var interfaces = BuildInterfaces(context.superinterfaces());
             var enumBody = context.enumBody();
             var constants = BuildEnumConstants(enumBody.enumConstantList());
-            var members = BuildEnumMembers(enumBody.enumBodyDeclarations());
+            var bodyResult = BuildEnumBody(enumBody.enumBodyDeclarations());
             var javaDoc = ExtractJavaDoc(context);
 
             return new EnumDeclaration(
                 location, name, modifiers, annotations,
-                interfaces, constants, members, new List<TypeDeclaration>(), javaDoc
+                interfaces, constants, 
+                bodyResult?.Members ?? new List<MemberDeclaration>(), 
+                bodyResult?.NestedTypes ?? new List<TypeDeclaration>(), 
+                javaDoc
             );
         }
 
@@ -249,6 +252,7 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             var members = BuildAnnotationMembers(context.annotationTypeBody());
             var javaDoc = ExtractJavaDoc(context);
 
+            // Annotations don't support nested types in Java
             return new AnnotationDeclaration(
                 location, name, modifiers, annotations, members, new List<TypeDeclaration>(), javaDoc
             );
@@ -667,6 +671,54 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             return members;
         }
 
+        private ClassBodyResult BuildClassBody(Java9Parser.ClassBodyContext context)
+        {
+            var result = new ClassBodyResult();
+
+            foreach (var declaration in context.classBodyDeclaration())
+            {
+                if (declaration.classMemberDeclaration() != null)
+                {
+                    var classMemberContext = declaration.classMemberDeclaration();
+                    
+                    // Check if it's a nested type declaration
+                    if (classMemberContext.classDeclaration() != null)
+                    {
+                        var nestedType = Visit(classMemberContext.classDeclaration()) as TypeDeclaration;
+                        if (nestedType != null) result.NestedTypes.Add(nestedType);
+                    }
+                    else if (classMemberContext.interfaceDeclaration() != null)
+                    {
+                        var nestedType = Visit(classMemberContext.interfaceDeclaration()) as TypeDeclaration;
+                        if (nestedType != null) result.NestedTypes.Add(nestedType);
+                    }
+                    else
+                    {
+                        // It's a regular member (field or method)
+                        var member = BuildClassMember(classMemberContext);
+                        if (member != null) result.Members.Add(member);
+                    }
+                }
+                else if (declaration.instanceInitializer() != null)
+                {
+                    var initializer = BuildInstanceInitializer(declaration.instanceInitializer());
+                    if (initializer != null) result.Members.Add(initializer);
+                }
+                else if (declaration.staticInitializer() != null)
+                {
+                    var initializer = BuildStaticInitializer(declaration.staticInitializer());
+                    if (initializer != null) result.Members.Add(initializer);
+                }
+                else if (declaration.constructorDeclaration() != null)
+                {
+                    var constructor = BuildConstructor(declaration.constructorDeclaration());
+                    if (constructor != null) result.Members.Add(constructor);
+                }
+            }
+
+            return result;
+        }
+
         private MemberDeclaration? BuildClassMember(Java9Parser.ClassMemberDeclarationContext context)
         {
             if (context.fieldDeclaration() != null)
@@ -677,15 +729,8 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             {
                 return BuildMethodDeclaration(context.methodDeclaration());
             }
-            else if (context.classDeclaration() != null)
-            {
-                return Visit(context.classDeclaration()) as MemberDeclaration;
-            }
-            else if (context.interfaceDeclaration() != null)
-            {
-                return Visit(context.interfaceDeclaration()) as MemberDeclaration;
-            }
-
+            // Nested types are now handled in BuildClassBody
+            
             return null;
         }
 
@@ -1040,6 +1085,37 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             return members;
         }
 
+        private ClassBodyResult BuildInterfaceBody(Java9Parser.InterfaceBodyContext context)
+        {
+            var result = new ClassBodyResult();
+
+            foreach (var declaration in context.interfaceMemberDeclaration())
+            {
+                if (declaration.constantDeclaration() != null)
+                {
+                    var constant = BuildConstantDeclaration(declaration.constantDeclaration());
+                    if (constant != null) result.Members.Add(constant);
+                }
+                else if (declaration.interfaceMethodDeclaration() != null)
+                {
+                    var method = BuildInterfaceMethodDeclaration(declaration.interfaceMethodDeclaration());
+                    if (method != null) result.Members.Add(method);
+                }
+                else if (declaration.classDeclaration() != null)
+                {
+                    var nestedType = Visit(declaration.classDeclaration()) as TypeDeclaration;
+                    if (nestedType != null) result.NestedTypes.Add(nestedType);
+                }
+                else if (declaration.interfaceDeclaration() != null)
+                {
+                    var nestedType = Visit(declaration.interfaceDeclaration()) as TypeDeclaration;
+                    if (nestedType != null) result.NestedTypes.Add(nestedType);
+                }
+            }
+
+            return result;
+        }
+
         private FieldDeclaration? BuildConstantDeclaration(Java9Parser.ConstantDeclarationContext context)
         {
             var location = GetSourceRange(context);
@@ -1170,6 +1246,56 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             }
 
             return members;
+        }
+
+        private ClassBodyResult? BuildEnumBody(Java9Parser.EnumBodyDeclarationsContext? context)
+        {
+            if (context == null) return null;
+            
+            var result = new ClassBodyResult();
+
+            foreach (var declaration in context.classBodyDeclaration())
+            {
+                if (declaration.classMemberDeclaration() != null)
+                {
+                    var classMemberContext = declaration.classMemberDeclaration();
+                    
+                    // Check if it's a nested type declaration
+                    if (classMemberContext.classDeclaration() != null)
+                    {
+                        var nestedType = Visit(classMemberContext.classDeclaration()) as TypeDeclaration;
+                        if (nestedType != null) result.NestedTypes.Add(nestedType);
+                    }
+                    else if (classMemberContext.interfaceDeclaration() != null)
+                    {
+                        var nestedType = Visit(classMemberContext.interfaceDeclaration()) as TypeDeclaration;
+                        if (nestedType != null) result.NestedTypes.Add(nestedType);
+                    }
+                    else
+                    {
+                        // It's a regular member (field or method)
+                        var member = BuildClassMember(classMemberContext);
+                        if (member != null) result.Members.Add(member);
+                    }
+                }
+                else if (declaration.instanceInitializer() != null)
+                {
+                    var initializer = BuildInstanceInitializer(declaration.instanceInitializer());
+                    if (initializer != null) result.Members.Add(initializer);
+                }
+                else if (declaration.staticInitializer() != null)
+                {
+                    var initializer = BuildStaticInitializer(declaration.staticInitializer());
+                    if (initializer != null) result.Members.Add(initializer);
+                }
+                else if (declaration.constructorDeclaration() != null)
+                {
+                    var constructor = BuildConstructor(declaration.constructorDeclaration());
+                    if (constructor != null) result.Members.Add(constructor);
+                }
+            }
+
+            return result;
         }
 
         private List<AnnotationMember> BuildAnnotationMembers(Java9Parser.AnnotationTypeBodyContext context)
@@ -3463,6 +3589,13 @@ namespace MarketAlly.IronJava.Core.AST.Builders
             }
 
             return new JavaDoc(range, content, tags);
+        }
+
+        // Helper classes for building class bodies with both members and nested types
+        private class ClassBodyResult
+        {
+            public List<MemberDeclaration> Members { get; set; } = new List<MemberDeclaration>();
+            public List<TypeDeclaration> NestedTypes { get; set; } = new List<TypeDeclaration>();
         }
     }
 }
