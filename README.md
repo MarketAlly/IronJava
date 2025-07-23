@@ -39,9 +39,9 @@ Install-Package IronJava
 ## Quick Start
 
 ```csharp
-using IronJava.Core;
-using IronJava.Core.AST.Nodes;
-using IronJava.Core.AST.Query;
+using MarketAlly.IronJava.Core;
+using MarketAlly.IronJava.Core.AST.Nodes;
+using MarketAlly.IronJava.Core.AST.Query;
 
 // Parse Java source code
 var parser = new JavaParser();
