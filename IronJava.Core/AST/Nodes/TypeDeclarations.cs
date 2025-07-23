@@ -48,6 +48,7 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
         public TypeReference? SuperClass { get; }
         public IReadOnlyList<TypeReference> Interfaces { get; }
         public IReadOnlyList<MemberDeclaration> Members { get; }
+        public IReadOnlyList<TypeDeclaration> NestedTypes { get; }
         public bool IsRecord { get; }
 
         public ClassDeclaration(
@@ -59,6 +60,7 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             TypeReference? superClass,
             IReadOnlyList<TypeReference> interfaces,
             IReadOnlyList<MemberDeclaration> members,
+            IReadOnlyList<TypeDeclaration> nestedTypes,
             JavaDoc? javaDoc,
             bool isRecord = false) 
             : base(location, name, modifiers, annotations, typeParameters, javaDoc)
@@ -66,14 +68,16 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             SuperClass = superClass;
             Interfaces = interfaces;
             Members = members;
+            NestedTypes = nestedTypes;
             IsRecord = isRecord;
 
             if (superClass != null) AddChild(superClass);
             AddChildren(interfaces);
             AddChildren(members);
+            AddChildren(nestedTypes);
         }
 
-        public override IEnumerable<JavaNode> Body => Members;
+        public override IEnumerable<JavaNode> Body => Members.Cast<JavaNode>().Concat(NestedTypes);
 
         public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitClassDeclaration(this);
         public override void Accept(IJavaVisitor visitor) => visitor.VisitClassDeclaration(this);
@@ -86,6 +90,7 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
     {
         public IReadOnlyList<TypeReference> ExtendedInterfaces { get; }
         public IReadOnlyList<MemberDeclaration> Members { get; }
+        public IReadOnlyList<TypeDeclaration> NestedTypes { get; }
 
         public InterfaceDeclaration(
             SourceRange location,
@@ -95,17 +100,20 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             IReadOnlyList<TypeParameter> typeParameters,
             IReadOnlyList<TypeReference> extendedInterfaces,
             IReadOnlyList<MemberDeclaration> members,
+            IReadOnlyList<TypeDeclaration> nestedTypes,
             JavaDoc? javaDoc) 
             : base(location, name, modifiers, annotations, typeParameters, javaDoc)
         {
             ExtendedInterfaces = extendedInterfaces;
             Members = members;
+            NestedTypes = nestedTypes;
 
             AddChildren(extendedInterfaces);
             AddChildren(members);
+            AddChildren(nestedTypes);
         }
 
-        public override IEnumerable<JavaNode> Body => Members;
+        public override IEnumerable<JavaNode> Body => Members.Cast<JavaNode>().Concat(NestedTypes);
 
         public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitInterfaceDeclaration(this);
         public override void Accept(IJavaVisitor visitor) => visitor.VisitInterfaceDeclaration(this);
@@ -119,6 +127,7 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
         public IReadOnlyList<TypeReference> Interfaces { get; }
         public IReadOnlyList<EnumConstant> Constants { get; }
         public IReadOnlyList<MemberDeclaration> Members { get; }
+        public IReadOnlyList<TypeDeclaration> NestedTypes { get; }
 
         public EnumDeclaration(
             SourceRange location,
@@ -128,19 +137,22 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             IReadOnlyList<TypeReference> interfaces,
             IReadOnlyList<EnumConstant> constants,
             IReadOnlyList<MemberDeclaration> members,
+            IReadOnlyList<TypeDeclaration> nestedTypes,
             JavaDoc? javaDoc) 
             : base(location, name, modifiers, annotations, new List<TypeParameter>(), javaDoc)
         {
             Interfaces = interfaces;
             Constants = constants;
             Members = members;
+            NestedTypes = nestedTypes;
 
             AddChildren(interfaces);
             AddChildren(constants);
             AddChildren(members);
+            AddChildren(nestedTypes);
         }
 
-        public override IEnumerable<JavaNode> Body => Constants.Cast<JavaNode>().Concat(Members);
+        public override IEnumerable<JavaNode> Body => Constants.Cast<JavaNode>().Concat(Members).Concat(NestedTypes);
 
         public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitEnumDeclaration(this);
         public override void Accept(IJavaVisitor visitor) => visitor.VisitEnumDeclaration(this);
@@ -152,6 +164,7 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
     public class AnnotationDeclaration : TypeDeclaration
     {
         public IReadOnlyList<AnnotationMember> Members { get; }
+        public IReadOnlyList<TypeDeclaration> NestedTypes { get; }
 
         public AnnotationDeclaration(
             SourceRange location,
@@ -159,14 +172,17 @@ namespace MarketAlly.IronJava.Core.AST.Nodes
             Modifiers modifiers,
             IReadOnlyList<Annotation> annotations,
             IReadOnlyList<AnnotationMember> members,
+            IReadOnlyList<TypeDeclaration> nestedTypes,
             JavaDoc? javaDoc) 
             : base(location, name, modifiers, annotations, new List<TypeParameter>(), javaDoc)
         {
             Members = members;
+            NestedTypes = nestedTypes;
             AddChildren(members);
+            AddChildren(nestedTypes);
         }
 
-        public override IEnumerable<JavaNode> Body => Members;
+        public override IEnumerable<JavaNode> Body => Members.Cast<JavaNode>().Concat(NestedTypes);
 
         public override T Accept<T>(IJavaVisitor<T> visitor) => visitor.VisitAnnotationDeclaration(this);
         public override void Accept(IJavaVisitor visitor) => visitor.VisitAnnotationDeclaration(this);
